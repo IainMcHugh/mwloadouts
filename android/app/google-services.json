@@ -1,0 +1,40 @@
+{
+  "project_info": {
+    "project_number": "166506015573",
+    "firebase_url": "https://mwloadouts.firebaseio.com",
+    "project_id": "mwloadouts",
+    "storage_bucket": "mwloadouts.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:166506015573:android:e1a39afec7e765d2505ddc",
+        "android_client_info": {
+          "package_name": "com.iainmchugh.mwloadouts"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "166506015573-f7e4ljf9gasfv4rkg30dtg8v0b7cm6hd.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyB7dICpkmAm-IVLGeut1YexNoFusim8b0A"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "166506015573-f7e4ljf9gasfv4rkg30dtg8v0b7cm6hd.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
