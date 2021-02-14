@@ -13,7 +13,7 @@ import 'package:provider/provider.dart';
 //   @override
 //   Widget build(BuildContext context) {
 //     final user = Provider.of<User>(context);
-    
+
 //     print("Wrapper: below is the user:");
 //     print(user);
 //     // return either Home or Authenticate Widget
@@ -29,11 +29,10 @@ import 'package:provider/provider.dart';
 // }
 
 class Wrapper extends StatelessWidget {
-  
   @override
   Widget build(BuildContext context) {
-    final user = Provider.of<User>(context);
-    
+    final user = Provider.of<WZUser>(context);
+
     print("Wrapper: below is the user:");
     print(user);
     // return either Home or Authenticate Widget

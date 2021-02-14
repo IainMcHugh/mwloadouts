@@ -1,8 +1,7 @@
 import 'dart:io';
-import 'package:firebase_admob/firebase_admob.dart';
+// import 'package:firebase_admob/firebase_admob.dart';
 
 class AdMobService {
-
   String getAdMobAppId() {
     if (Platform.isIOS) {
       return null;
@@ -18,6 +17,8 @@ class AdMobService {
       return null;
     } else if (Platform.isAndroid) {
       return 'ca-app-pub-8463101557576443/8275416665';
+    } else {
+      return null;
     }
   }
 }

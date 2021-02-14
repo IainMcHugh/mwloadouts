@@ -33,7 +33,7 @@ class _PerkState extends State<Perk> {
   }
 
   _loading() {
-    TextEditingController controller = TextEditingController();
+    // TextEditingController controller = TextEditingController();
     return showDialog(
         context: context,
         barrierDismissible: false,

@@ -40,50 +40,50 @@ class _LoadoutState extends State<Loadout> {
   @override
   void initState() {
     super.initState();
-    loadoutName = widget.loadout.data['name'];
+    loadoutName = widget.loadout.data()['name'];
 
-    if (widget.loadout.data['tier 2'].toLowerCase() == "overkill") {
+    if (widget.loadout.data()['tier 2'].toLowerCase() == "overkill") {
       isOverkill = true;
     }
   }
 
   int getLoadoutAttachmentsQtyPrimary() {
     int attachQtyPrimary = 0;
-    widget.loadout.data["primary"].forEach(
-      (key, value) => {
-        if (key == "image")
-          {
-            // do nothing
-          }
-        else
-          {
-            print(value),
-            attachKeysPrimary.add(key),
-            attachValuesPrimary.add(value),
-            attachQtyPrimary++
-          }
-      },
-    );
+    widget.loadout.data()["primary"].forEach(
+          (key, value) => {
+            if (key == "image")
+              {
+                // do nothing
+              }
+            else
+              {
+                print(value),
+                attachKeysPrimary.add(key),
+                attachValuesPrimary.add(value),
+                attachQtyPrimary++
+              }
+          },
+        );
     return attachQtyPrimary;
   }
 
   int getLoadoutAttachmentsQtySecondary() {
     int attachQtySecondary = 0;
-    widget.loadout.data["secondary"].forEach(
-      (key, value) => {
-        if (key == "image")
-          {
-            // do nothing
-          }
-        else
-          {
-            print(value),
-            attachKeysSecondary.add(key),
-            attachValuesSecondary.add(value),
-            attachQtySecondary++
-          }
-      },
-    );
+    widget.loadout.data()["secondary"].forEach(
+          (key, value) => {
+            if (key == "image")
+              {
+                // do nothing
+              }
+            else
+              {
+                print(value),
+                attachKeysSecondary.add(key),
+                attachValuesSecondary.add(value),
+                attachQtySecondary++
+              }
+          },
+        );
     return attachQtySecondary;
   }
 
@@ -96,13 +96,13 @@ class _LoadoutState extends State<Loadout> {
         context,
         MaterialPageRoute(
           builder: (context) => Attachment(
-            slots: widget.loadout.data["primary_slots"],
+            slots: widget.loadout.data()["primary_slots"],
             loadout: widget.loadout,
-            position: widget.loadout.data["position"],
+            position: widget.loadout.data()["position"],
             isPrimary: isPrimary,
             isOverkill: isOverkill,
-            type: widget.loadout.data['primary_type'],
-            weapon: widget.loadout.data['primary_name'],
+            type: widget.loadout.data()['primary_type'],
+            weapon: widget.loadout.data()['primary_name'],
             attachmentKey: attachmentKey.toLowerCase(),
             attachmentValue: attachmentValue,
           ),
@@ -113,13 +113,13 @@ class _LoadoutState extends State<Loadout> {
         context,
         MaterialPageRoute(
           builder: (context) => Attachment(
-            slots: widget.loadout.data["secondary_slots"],
+            slots: widget.loadout.data()["secondary_slots"],
             loadout: widget.loadout,
-            position: widget.loadout.data["position"],
+            position: widget.loadout.data()["position"],
             isPrimary: isPrimary,
             isOverkill: isOverkill,
-            type: widget.loadout.data['secondary_type'],
-            weapon: widget.loadout.data['secondary_name'],
+            type: widget.loadout.data()['secondary_type'],
+            weapon: widget.loadout.data()['secondary_name'],
             attachmentKey: attachmentKey.toLowerCase(),
             attachmentValue: attachmentValue,
           ),
@@ -136,7 +136,7 @@ class _LoadoutState extends State<Loadout> {
           isOverkill: isOverkill,
           isPrimary: isPrimary,
           weaponType: weaponType,
-          position: widget.loadout.data["position"],
+          position: widget.loadout.data()["position"],
         ),
       ),
     );
@@ -147,7 +147,7 @@ class _LoadoutState extends State<Loadout> {
       context,
       MaterialPageRoute(
         builder: (context) => Equipment(
-          position: widget.loadout.data['position'],
+          position: widget.loadout.data()['position'],
           isLethal: isLethal,
         ),
       ),
@@ -159,7 +159,7 @@ class _LoadoutState extends State<Loadout> {
       context,
       MaterialPageRoute(
         builder: (context) => Perk(
-            position: widget.loadout.data['position'],
+            position: widget.loadout.data()['position'],
             tierNumber: tierNumber,
             currPerk2: currPerk2),
       ),
@@ -211,7 +211,7 @@ class _LoadoutState extends State<Loadout> {
                   print(controller.text),
                   // Update database with New Name
                   await _database.updateLoadoutName(
-                      controller.text, widget.loadout.data['position']),
+                      controller.text, widget.loadout.data()['position']),
                   // update local Loadout Name displayed
                   this.setState(() {
                     loadoutName = controller.text;
@@ -279,7 +279,7 @@ class _LoadoutState extends State<Loadout> {
                     Padding(
                       padding: EdgeInsets.symmetric(horizontal: 30),
                       child: Text(
-                        widget.loadout.data['primary_name'],
+                        widget.loadout.data()['primary_name'],
                         style: TextStyle(
                           color: Color.fromRGBO(240, 240, 240, 1),
                           fontWeight: FontWeight.w500,
@@ -295,7 +295,7 @@ class _LoadoutState extends State<Loadout> {
                               navigateToWeaponPage(
                                 true,
                                 isOverkill,
-                                widget.loadout.data['primary_type'],
+                                widget.loadout.data()['primary_type'],
                               );
                             },
                           )
@@ -309,7 +309,7 @@ class _LoadoutState extends State<Loadout> {
                   future:
                       // _storage.getWeaponImage(widget.loadout.data["primary_image"]),
                       _storage.getWeaponImage(
-                          widget.loadout.data["primary"]["image"]),
+                          widget.loadout.data()["primary"]["image"]),
                   builder: (context, image) {
                     if (image.hasData) {
                       return Image(
@@ -341,7 +341,7 @@ class _LoadoutState extends State<Loadout> {
                   ),
                   subtitle: Text(
                     "Slots: " +
-                        widget.loadout.data['primary_slots'].toString() +
+                        widget.loadout.data()['primary_slots'].toString() +
                         "/5",
                     style: TextStyle(
                         color: Color.fromRGBO(240, 240, 240, 1),
@@ -393,7 +393,7 @@ class _LoadoutState extends State<Loadout> {
                     Padding(
                       padding: EdgeInsets.symmetric(horizontal: 30),
                       child: Text(
-                        widget.loadout.data['secondary_name'],
+                        widget.loadout.data()['secondary_name'],
                         style: TextStyle(
                           color: Color.fromRGBO(240, 240, 240, 1),
                           fontWeight: FontWeight.w500,
@@ -411,7 +411,7 @@ class _LoadoutState extends State<Loadout> {
                                 // and false for secondary
                                 false,
                                 isOverkill,
-                                widget.loadout.data['secondary_type'],
+                                widget.loadout.data()['secondary_type'],
                               );
                             },
                           )
@@ -423,7 +423,7 @@ class _LoadoutState extends State<Loadout> {
                 color: Color.fromRGBO(20, 20, 20, 1),
                 child: FutureBuilder<String>(
                   future: _storage.getWeaponImage(
-                      widget.loadout.data["secondary"]["image"]),
+                      widget.loadout.data()["secondary"]["image"]),
                   builder: (context, image) {
                     if (image.hasData) {
                       return Image(
@@ -453,7 +453,7 @@ class _LoadoutState extends State<Loadout> {
                   ),
                   subtitle: Text(
                     "Slots: " +
-                        widget.loadout.data['secondary_slots'].toString() +
+                        widget.loadout.data()['secondary_slots'].toString() +
                         "/5",
                     style: TextStyle(
                         color: Color.fromRGBO(240, 240, 240, 1),
@@ -506,7 +506,7 @@ class _LoadoutState extends State<Loadout> {
                           fontWeight: FontWeight.w800),
                     ),
                     subtitle: Text(
-                      widget.loadout.data["lethal"],
+                      widget.loadout.data()["lethal"],
                       style: TextStyle(
                           color: Color.fromRGBO(240, 240, 240, 1),
                           fontWeight: FontWeight.w300),
@@ -524,7 +524,7 @@ class _LoadoutState extends State<Loadout> {
                           fontWeight: FontWeight.w800),
                     ),
                     subtitle: Text(
-                      widget.loadout.data["tactical"],
+                      widget.loadout.data()["tactical"],
                       style: TextStyle(
                           color: Color.fromRGBO(240, 240, 240, 1),
                           fontWeight: FontWeight.w300),
@@ -542,7 +542,7 @@ class _LoadoutState extends State<Loadout> {
                           fontWeight: FontWeight.w800),
                     ),
                     subtitle: Text(
-                      widget.loadout.data["tier 1"],
+                      widget.loadout.data()["tier 1"],
                       style: TextStyle(
                           color: Color.fromRGBO(240, 240, 240, 1),
                           fontWeight: FontWeight.w300),
@@ -550,7 +550,7 @@ class _LoadoutState extends State<Loadout> {
                     onTap: () => widget.isUser
                         ? navigateToPerkPage(
                             1,
-                            widget.loadout.data['tier 2'],
+                            widget.loadout.data()['tier 2'],
                           )
                         : null),
               ),
@@ -564,7 +564,7 @@ class _LoadoutState extends State<Loadout> {
                           fontWeight: FontWeight.w800),
                     ),
                     subtitle: Text(
-                      widget.loadout.data["tier 2"],
+                      widget.loadout.data()["tier 2"],
                       style: TextStyle(
                           color: Color.fromRGBO(240, 240, 240, 1),
                           fontWeight: FontWeight.w300),
@@ -572,7 +572,7 @@ class _LoadoutState extends State<Loadout> {
                     onTap: () => widget.isUser
                         ? navigateToPerkPage(
                             2,
-                            widget.loadout.data['tier 2'],
+                            widget.loadout.data()['tier 2'],
                           )
                         : null),
               ),
@@ -586,7 +586,7 @@ class _LoadoutState extends State<Loadout> {
                           fontWeight: FontWeight.w800),
                     ),
                     subtitle: Text(
-                      widget.loadout.data["tier 3"],
+                      widget.loadout.data()["tier 3"],
                       style: TextStyle(
                           color: Color.fromRGBO(240, 240, 240, 1),
                           fontWeight: FontWeight.w300),
@@ -594,7 +594,7 @@ class _LoadoutState extends State<Loadout> {
                     onTap: () => widget.isUser
                         ? navigateToPerkPage(
                             3,
-                            widget.loadout.data['tier 2'],
+                            widget.loadout.data()['tier 2'],
                           )
                         : null),
               ),

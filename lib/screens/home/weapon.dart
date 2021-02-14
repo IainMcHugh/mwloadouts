@@ -62,7 +62,7 @@ class _WeaponState extends State<Weapon> {
   }
 
   _loading() {
-    TextEditingController controller = TextEditingController();
+    // TextEditingController controller = TextEditingController();
     return showDialog(
         context: context,
         barrierDismissible: false,
@@ -173,12 +173,12 @@ class _WeaponState extends State<Weapon> {
                         itemCount: snap.data.length,
                         itemBuilder: (context, index) {
                           DocumentSnapshot weapons = snap.data[index];
-                          print(weapons.data.keys);
+                          print(weapons.data().keys);
                           return ListTile(
                             contentPadding: EdgeInsets.symmetric(
                                 horizontal: 30, vertical: 5),
                             title: Text(
-                              weapons.documentID,
+                              weapons.id,
                               style: TextStyle(
                                   color: Color.fromRGBO(240, 240, 240, 1),
                                   fontSize: 20),
@@ -186,15 +186,15 @@ class _WeaponState extends State<Weapon> {
                             onTap: () async {
                               _loading();
                               // PASSING WEAPON DATA KEYS INCLUDES IMAGE: "gs.ww..." need to pass value as well!
-                              String imageURL = weapons.data["image"];
+                              String imageURL = weapons.data()["image"];
                               print(imageURL);
                               var listLoadout = await _database.setNewWeapon(
                                   widget.isOverkill,
                                   widget.isPrimary,
                                   type,
-                                  weapons.documentID,
+                                  weapons.id,
                                   widget.position,
-                                  weapons.data.keys,
+                                  weapons.data().keys,
                                   imageURL);
                               // await new Future.delayed(new Duration(milliseconds: 3000));
                               int pos = int.parse(widget.position);
@@ -212,51 +212,6 @@ class _WeaponState extends State<Weapon> {
             ],
           ),
         ),
-        // body: FutureBuilder(
-        //   future: _database.getWeaponList(
-        //       widget.isPrimary, widget.isOverkill, type),
-        //   builder: (context, snap) {
-        //     if (snap.connectionState == ConnectionState.waiting) {
-        //       return Center(
-        //         child: Text("Loading..."),
-        //       );
-        //     } else {
-        //       return ListView.builder(
-        //           itemCount: snap.data.length,
-        //           itemBuilder: (context, index) {
-        //             DocumentSnapshot weapons = snap.data[index];
-        //             print(weapons.data.keys);
-        //             return ListTile(
-        //               contentPadding:
-        //                   EdgeInsets.symmetric(horizontal: 30, vertical: 5),
-        //               title: Text(
-        //                 weapons.documentID,
-        //                 style: TextStyle(
-        //                     color: Color.fromRGBO(240, 240, 240, 1),
-        //                     fontSize: 20),
-        //               ),
-        //               onTap: () async {
-        //                 // PASSING WEAPON DATA KEYS INCLUDES IMAGE: "gs.ww..." need to pass value as well!
-        //                 String imageURL = weapons.data["image"];
-        //                 print(imageURL);
-        //                 var listLoadout = await _database.setNewWeapon(
-        //                     widget.isOverkill,
-        //                     widget.isPrimary,
-        //                     type,
-        //                     weapons.documentID,
-        //                     widget.position,
-        //                     weapons.data.keys,
-        //                     imageURL);
-        //                 // await new Future.delayed(new Duration(milliseconds: 3000));
-        //                 int pos = int.parse(widget.position);
-        //                 DocumentSnapshot loadout = listLoadout[pos];
-        //                 navigateBackToLoadoutPage(loadout);
-        //               },
-        //             );
-        //           });
-        //     }
-        //   },
-        // ),
       ),
     );
   }

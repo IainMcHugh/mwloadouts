@@ -4,19 +4,19 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 
 class DatabaseService {
   final FirebaseAuth _auth = FirebaseAuth.instance;
-  final dbRef = Firestore.instance;
+  final dbRef = FirebaseFirestore.instance;
   String userID = '';
 
   // get the current Users Uid
-  Future<String> getUid() async {
-    final FirebaseUser user = await _auth.currentUser();
-    return user.uid.toString();
+  String getUid() {
+    String user = _auth.currentUser.uid;
+    return user;
   }
 
   Future createNewUser(String username, String email) async {
     print("database.dart: starting createNewUser()");
-    userID = await getUid();
-    await dbRef.collection("users").document(userID).setData({
+    userID = getUid();
+    await dbRef.collection("users").doc(userID).set({
       'userKey': userID,
       'username': username,
       'email': email,
@@ -30,17 +30,16 @@ class DatabaseService {
 
   copyOverDefaultLoadouts() async {
     print("database.dart: starting copyOverDefaultLoadouts");
-    var result =
-        await dbRef.collection('loadouts').getDocuments().then((querySnap) => {
-              querySnap.documents.forEach((result) {
-                dbRef
-                    .collection('users')
-                    .document(userID)
-                    .collection('loadouts')
-                    .document(result.documentID)
-                    .setData(result.data);
-              })
-            });
+    var result = await dbRef.collection('loadouts').get().then((querySnap) => {
+          querySnap.docs.forEach((res) {
+            dbRef
+                .collection('users')
+                .doc(userID)
+                .collection('loadouts')
+                .doc(res.id)
+                .set(res.data());
+          })
+        });
   }
 
   Future getUserLoadouts(bool isUser, String username, String userkey) async {
@@ -50,22 +49,21 @@ class DatabaseService {
       await new Future.delayed(new Duration(milliseconds: 1000));
       QuerySnapshot qn = await dbRef
           .collection('users')
-          .document(userID)
+          .doc(userID)
           .collection('loadouts')
-          .getDocuments();
+          .get();
       print("database.dart: returning QuerySnapshot from getUserLoadouts()");
-      print(
-          "database.dart: QuerySnapshot is " + qn.documents.length.toString());
-      return qn.documents;
+      print("database.dart: QuerySnapshot is " + qn.docs.length.toString());
+      return qn.docs;
     } else {
       print("database.dart: selected another user");
       await new Future.delayed(new Duration(milliseconds: 1000));
       QuerySnapshot qn = await dbRef
           .collection('users')
-          .document(userkey)
+          .doc(userkey)
           .collection('loadouts')
-          .getDocuments();
-      return qn.documents;
+          .get();
+      return qn.docs;
     }
   }
 
@@ -74,12 +72,12 @@ class DatabaseService {
     userID = await getUid();
     await dbRef
         .collection("users")
-        .document(userID)
+        .doc(userID)
         .collection("loadouts")
-        .document(position)
-        .setData({
+        .doc(position)
+        .set({
       "name": newName,
-    }, merge: true);
+    }, SetOptions(merge: true));
   }
 
   getWeaponAttachments(bool isPrimary, bool isOverkill, String type,
@@ -95,9 +93,9 @@ class DatabaseService {
         : primary = 'secondary_weapon';
     var gunDocument = dbRef
         .collection('guns')
-        .document(primary)
+        .doc(primary)
         .collection(type)
-        .document(name)
+        .doc(name)
         .snapshots();
 
     return gunDocument;
@@ -117,42 +115,42 @@ class DatabaseService {
       isPrimary
           ? await dbRef
               .collection("users")
-              .document(userID)
+              .doc(userID)
               .collection("loadouts")
-              .document(position)
-              .setData({
+              .doc(position)
+              .set({
               "primary_slots": slots - 1,
               "primary": {attachmentKey: attachmentValue}
-            }, merge: true)
+            }, SetOptions(merge: true))
           : await dbRef
               .collection("users")
-              .document(userID)
+              .doc(userID)
               .collection("loadouts")
-              .document(position)
-              .setData({
+              .doc(position)
+              .set({
               "secondary_slots": slots - 1,
               "secondary": {attachmentKey: attachmentValue}
-            }, merge: true);
+            }, SetOptions(merge: true));
       return getUserLoadouts(true, null, null);
     } else if (currAttachment != "-") {
       print("database.dart: attachment is being changed");
       isPrimary
           ? await dbRef
               .collection("users")
-              .document(userID)
+              .doc(userID)
               .collection("loadouts")
-              .document(position)
-              .setData({
+              .doc(position)
+              .set({
               "primary": {attachmentKey: attachmentValue}
-            }, merge: true)
+            }, SetOptions(merge: true))
           : await dbRef
               .collection("users")
-              .document(userID)
+              .doc(userID)
               .collection("loadouts")
-              .document(position)
-              .setData({
+              .doc(position)
+              .set({
               "secondary": {attachmentKey: attachmentValue}
-            }, merge: true);
+            }, SetOptions(merge: true));
       return getUserLoadouts(true, null, null);
     } else if (slots == 5) {
       print("database.dart: too many attachments being added");
@@ -162,22 +160,22 @@ class DatabaseService {
       isPrimary
           ? await dbRef
               .collection("users")
-              .document(userID)
+              .doc(userID)
               .collection("loadouts")
-              .document(position)
-              .setData({
+              .doc(position)
+              .set({
               "primary_slots": slots + 1,
               "primary": {attachmentKey: attachmentValue}
-            }, merge: true)
+            }, SetOptions(merge: true))
           : await dbRef
               .collection("users")
-              .document(userID)
+              .doc(userID)
               .collection("loadouts")
-              .document(position)
-              .setData({
+              .doc(position)
+              .set({
               "secondary_slots": slots + 1,
               "secondary": {attachmentKey: attachmentValue}
-            }, merge: true);
+            }, SetOptions(merge: true));
       return getUserLoadouts(true, null, null);
     }
   }
@@ -187,13 +185,10 @@ class DatabaseService {
     isPrimary || isOverkill
         ? primary = "primary_weapon"
         : primary = "secondary_weapon";
-    QuerySnapshot weaponDocuments = await dbRef
-        .collection("guns")
-        .document(primary)
-        .collection(type)
-        .getDocuments();
+    QuerySnapshot weaponDocuments =
+        await dbRef.collection("guns").doc(primary).collection(type).get();
 
-    return weaponDocuments.documents;
+    return weaponDocuments.docs;
   }
 
   Future setNewWeapon(bool isOverkill, bool isPrimary, String type, String name,
@@ -205,26 +200,26 @@ class DatabaseService {
     isPrimary
         ? await dbRef
             .collection("users")
-            .document(userID)
+            .doc(userID)
             .collection("loadouts")
-            .document(position)
-            .setData({
+            .doc(position)
+            .set({
             "primary_name": name,
             "primary_slots": 0,
             "primary_type": type,
             "primary": {}
-          }, merge: true)
+          }, SetOptions(merge: true))
         : await dbRef
             .collection("users")
-            .document(userID)
+            .doc(userID)
             .collection("loadouts")
-            .document(position)
-            .setData({
+            .doc(position)
+            .set({
             "secondary_name": name,
             "secondary_slots": 0,
             "secondary_type": type,
             "secondary": {}
-          }, merge: true);
+          }, SetOptions(merge: true));
 
     for (var item in keys) {
       print("database.dart: for items in key...");
@@ -232,24 +227,24 @@ class DatabaseService {
       item == "image"
           ? await dbRef
               .collection("users")
-              .document(userID)
+              .doc(userID)
               .collection("loadouts")
-              .document(position)
-              .setData({
+              .doc(position)
+              .set({
               primaryText: {
                 item: imageURL,
               }
-            }, merge: true)
+            }, SetOptions(merge: true))
           : await dbRef
               .collection("users")
-              .document(userID)
+              .doc(userID)
               .collection("loadouts")
-              .document(position)
-              .setData({
+              .doc(position)
+              .set({
               primaryText: {
                 item: "-",
               }
-            }, merge: true);
+            }, SetOptions(merge: true));
     }
 
     return getUserLoadouts(true, null, null);
@@ -260,7 +255,7 @@ class DatabaseService {
     isLethal ? equipment = "lethal" : equipment = "tactical";
 
     var equipmentDocument =
-        dbRef.collection('equipment').document(equipment).snapshots();
+        dbRef.collection('equipment').doc(equipment).snapshots();
 
     return equipmentDocument;
   }
@@ -272,27 +267,27 @@ class DatabaseService {
     isLethal
         ? await dbRef
             .collection("users")
-            .document(userID)
+            .doc(userID)
             .collection("loadouts")
-            .document(position)
-            .setData({
+            .doc(position)
+            .set({
             "lethal": newEquipment,
-          }, merge: true)
+          }, SetOptions(merge: true))
         : await dbRef
             .collection("users")
-            .document(userID)
+            .doc(userID)
             .collection("loadouts")
-            .document(position)
-            .setData({
+            .doc(position)
+            .set({
             "tactical": newEquipment,
-          }, merge: true);
+          }, SetOptions(merge: true));
     return getUserLoadouts(true, null, null);
   }
 
   getPerks(int tierNumber) {
     print("database.dart: started getPerks()");
     var perkDocument =
-        dbRef.collection('tiers').document("tier $tierNumber").snapshots();
+        dbRef.collection('tiers').doc("tier $tierNumber").snapshots();
 
     return perkDocument;
   }
@@ -300,20 +295,16 @@ class DatabaseService {
   updatePerks(
       String position, int tierNumber, String newPerk, String currPerk) async {
     print("database.dart: starting updatePerks();");
-    userID = await getUid();
-
-    // TODO: Two things are happening:
-    // updating secondary with new "primary" (w/ overkill) updates the
-    // primary spot instead of the secondary
+    userID = getUid();
 
     await dbRef
         .collection("users")
-        .document(userID)
+        .doc(userID)
         .collection("loadouts")
-        .document(position)
-        .setData({
+        .doc(position)
+        .set({
       "tier $tierNumber": newPerk,
-    }, merge: true);
+    }, SetOptions(merge: true));
 
     // if newPerk == "Overkill" then update entire second weapon
     if (tierNumber == 2) {
@@ -321,10 +312,10 @@ class DatabaseService {
         if (currPerk.toLowerCase() != "overkill") {
           await dbRef
               .collection("users")
-              .document(userID)
+              .doc(userID)
               .collection("loadouts")
-              .document(position)
-              .updateData({
+              .doc(position)
+              .update({
             "secondary_name": "AK47",
             "secondary_type": "assault_rifles",
             "secondary_slots": 0,
@@ -345,10 +336,10 @@ class DatabaseService {
         if (currPerk.toLowerCase() == "overkill") {
           await dbRef
               .collection("users")
-              .document(userID)
+              .doc(userID)
               .collection("loadouts")
-              .document(position)
-              .updateData({
+              .doc(position)
+              .update({
             "secondary_name": "M1911",
             "secondary_type": "pistols",
             "secondary_slots": 0,
@@ -379,6 +370,6 @@ class DatabaseService {
           "searchKey",
           isEqualTo: searchField.substring(0, 1).toUpperCase(),
         )
-        .getDocuments();
+        .get();
   }
 }

@@ -31,7 +31,7 @@ class _EquipmentState extends State<Equipment> {
   }
 
   _loading() {
-    TextEditingController controller = TextEditingController();
+    // TextEditingController controller = TextEditingController();
     return showDialog(
         context: context,
         barrierDismissible: false,

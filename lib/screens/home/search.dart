@@ -31,8 +31,8 @@ class _SearchState extends State<Search> {
 
     if (queryResultSet.length == 0 && val.length == 1) {
       databaseService.searchByName(val).then((QuerySnapshot docs) {
-        for (int i = 0; i < docs.documents.length; ++i) {
-          queryResultSet.add(docs.documents[i].data);
+        for (int i = 0; i < docs.docs.length; ++i) {
+          queryResultSet.add(docs.docs[i].data);
           setState(() {
             tempSearchStore.add(queryResultSet[i]);
           });

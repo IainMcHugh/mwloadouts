@@ -3,12 +3,13 @@ import 'package:flutter/material.dart';
 import 'package:mwloadouts/screens/authenticate/authenticate.dart';
 import 'package:mwloadouts/screens/home/loadout.dart';
 import 'package:mwloadouts/screens/home/search.dart';
+import 'package:mwloadouts/screens/wrapper.dart';
 import 'package:mwloadouts/services/admob.dart';
 import 'package:mwloadouts/services/auth.dart';
 import 'package:mwloadouts/services/database.dart';
 import 'package:firebase_admob/firebase_admob.dart';
-import 'package:basic_utils/basic_utils.dart';
-import 'package:provider/provider.dart';
+// import 'package:basic_utils/basic_utils.dart';
+// import 'package:provider/provider.dart';
 
 class Home extends StatefulWidget {
   final String username;
@@ -30,8 +31,8 @@ class _HomeState extends State<Home> {
   static String userKey1;
 
   resetUserKey() async {
-        userKey1 = await _database.getUid();
-      }
+    userKey1 = await _database.getUid();
+  }
 
   @override
   void initState() {
@@ -50,15 +51,15 @@ class _HomeState extends State<Home> {
       resetUserKey();
     }
 
-    
     // UNCOMMENT THIS ON RELEASE!!!!!!!
     FirebaseAdMob.instance.initialize(
       appId: _admob.getAdMobAppId(),
       // appId: FirebaseAdMob.testAppId,
     );
-    
+
     myBanner = buildBannerAd()..load();
   }
+
   // UNCOMMENT ALL OF THIS TOO!!!!!
   @override
   void dispose() {
@@ -130,6 +131,9 @@ class _HomeState extends State<Home> {
 
   signUserOut() async {
     dynamic result = await _auth.signOut();
+    print('Trying to sign out');
+    Navigator.pushAndRemoveUntil(context,
+        MaterialPageRoute(builder: (context) => Wrapper()), (_) => false);
   }
 
   @override
@@ -184,7 +188,6 @@ class _HomeState extends State<Home> {
               if (val == "signout")
                 {
                   await signUserOut(),
-                  // await _auth.signOut(),
                 }
             },
           ),
@@ -223,7 +226,7 @@ class _HomeState extends State<Home> {
                             shadowColor: Color.fromRGBO(107, 202, 250, 1),
                             child: ListTile(
                               title: Text(
-                                loadout.data['name'],
+                                loadout.data()['name'],
                                 style: TextStyle(
                                   color: Color.fromRGBO(107, 202, 250, 1),
                                 ),
@@ -238,7 +241,9 @@ class _HomeState extends State<Home> {
                 },
               ),
               // AdMob Here
-              SizedBox(height: AdSize.banner.height + 5.0,),
+              SizedBox(
+                height: AdSize.banner.height + 5.0,
+              ),
             ],
           ),
         ),

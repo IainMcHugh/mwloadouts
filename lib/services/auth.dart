@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:mwloadouts/models/user.dart';
 
@@ -5,17 +7,26 @@ class AuthService {
   final FirebaseAuth _auth = FirebaseAuth.instance;
 
   // create User object based on FirebaseUser
-  User _userFromFirebaseUser(FirebaseUser user) {
+  WZUser _userFromFirebaseUser(User user) {
     print("In the _userFromFirebaseUser() function");
     print(user);
-    return user != null ? User(uid: user.uid) : null;
+    return user != null ? WZUser(uid: user.uid) : null;
   }
 
   // auth change user stream
-  Stream<User> get user {
-    return _auth.onAuthStateChanged.map(
-      (FirebaseUser user) => _userFromFirebaseUser(user),
-    );
+  Stream<WZUser> get user {
+    // return _auth.onAuthStateChanged.map(
+    //   (User user) => _userFromFirebaseUser(user),
+    // );
+    _auth.authStateChanges().listen((User user) {
+      if (user == null) {
+        print('user is currently signed out');
+        return null;
+      } else {
+        print('user is currently signed in!');
+        return _userFromFirebaseUser(user);
+      }
+    });
   }
 
   // sign in with Email and Password
@@ -23,9 +34,9 @@ class AuthService {
     try {
       print("Email is: " + email);
       print("Password is: " + password);
-      AuthResult result = await _auth.signInWithEmailAndPassword(
+      UserCredential result = await _auth.signInWithEmailAndPassword(
           email: email, password: password);
-      FirebaseUser user = result.user;
+      User user = result.user;
       return _userFromFirebaseUser(user);
     } catch (e) {
       print(e.toString());
@@ -37,9 +48,9 @@ class AuthService {
   Future registerWithEmailAndPassword(String email, String password) async {
     print("auth.dart: starting 'registerWithEmailAndPassword()");
     try {
-      AuthResult result = await _auth.createUserWithEmailAndPassword(
+      UserCredential result = await _auth.createUserWithEmailAndPassword(
           email: email, password: password);
-      FirebaseUser user = result.user;
+      User user = result.user;
       print("auth.dart: User is registered and retreived");
       return _userFromFirebaseUser(user);
     } catch (e) {
